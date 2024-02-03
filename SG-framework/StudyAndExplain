@@ -1,0 +1,8 @@
+@JsonInclude用法
+JsonJsonInclude.Include.ALWAYS 这个是默认策略，任何情况下都序列化该字段，和不写这个注解是一样的效果。
+..NON_NULL这个最常用，即如果加该注解的字段为null,那么就不序列化这个字段了。
+..NON_ABSENT这个包含NON_NULL，当实例化的对象有Optional或AtomicReference类型的成员变量时，如果Optional引用的实例为空，用NON_ABSENT能使该字段不做序列化。
+..NON_EMPTY 这个属性包含NON_NULL，NON_ABSENT之后还包含如果字段为空也不序列化。这个也比较常用
+..JsonJsonInclude.Include.NON_DEFAULT ，如果字段是默认值的话就不序列化。
+------------------
+queryWrapper是mybatis plus中实现查询的对象封装操作类
