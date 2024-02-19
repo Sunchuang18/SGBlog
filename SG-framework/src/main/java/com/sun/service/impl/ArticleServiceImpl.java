@@ -8,6 +8,7 @@ import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
 import com.sun.mapper.ArticleMapper;
 import com.sun.service.ArticleService;
+import com.sun.utils.BeanCopyUtils;
 import com.sun.vo.HotArticleVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -35,19 +36,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //获取最终的查询结果，把结果封装在Article实体类里面会有很多不需要的字段
         List<Article> articles = page.getRecords();
 
+        /*
         //解决：把结果封装在HotArticleVO实体类里，此实体类只写需要的字段
         List<HotArticleVO> articleVos = new ArrayList<>();
         for (Article xxarticle : articles) {
             HotArticleVO xxvo = new HotArticleVO();
-            /*
-            使用Spring提供的BeanUtils类来实现Bean拷贝
-                第一个参数是元数据，第二个参数是目标数据，把源数据拷贝给目标数据。
-            虽然xxarticle里有很多不同的字段，但xxvo里只有3个字段
-                所以拷贝之后，就能把xxvo里的3个字段填充具体数据。
-            */
+            //使用Spring提供的BeanUtils类来实现Bean拷贝。第一个参数是元数据，第二个参数是目标数据，把源数据拷贝给目标数据。
+            //虽然xxarticle里有很多不同的字段，但xxvo里只有3个字段。所以拷贝之后，就能把xxvo里的3个字段填充具体数据。
             BeanUtils.copyProperties(xxarticle,xxvo);
             articleVos.add(xxvo);
         }
+        */
+        //将局部Bean拷贝注释。使用定义的BeanCopyUtils工具类的copyBeanList方法。如下：
+        List<HotArticleVO> articleVos = BeanCopyUtils.copyBeanList(articles, HotArticleVO.class);
 
         return ResponseResult.okResult(articleVos);
     }
