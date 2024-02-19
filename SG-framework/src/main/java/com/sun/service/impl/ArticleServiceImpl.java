@@ -7,8 +7,11 @@ import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
 import com.sun.mapper.ArticleMapper;
 import com.sun.service.ArticleService;
+import com.sun.vo.HotArticleVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,9 +30,24 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //最多只能查询出来10条信息。当前显示第一页的数据，每页显示10条数据
         Page<Article> page = new Page<>(1,10);
         page(page,queryWrapper);
-        //获取最终的查询结果
+
+        //获取最终的查询结果，把结果封装在Article实体类里面会有很多不需要的字段
         List<Article> articles = page.getRecords();
 
-        return ResponseResult.okResult(articles);
+        //解决：把结果封装在HotArticleVO实体类里，此实体类只写需要的字段
+        List<HotArticleVO> articleVos = new ArrayList<>();
+        for (Article xxarticle : articles) {
+            HotArticleVO xxvo = new HotArticleVO();
+            /*
+            使用Spring提供的BeanUtils类来实现Bean拷贝
+                第一个参数是元数据，第二个参数是目标数据，把源数据拷贝给目标数据。
+            虽然xxarticle里有很多不同的字段，但xxvo里只有3个字段
+                所以拷贝之后，就能把xxvo里的3个字段填充具体数据。
+            */
+            BeanUtils.copyProperties(xxarticle,xxvo);
+            articleVos.add(xxvo);
+        }
+
+        return ResponseResult.okResult(articleVos);
     }
 }
