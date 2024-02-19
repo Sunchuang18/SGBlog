@@ -3,6 +3,7 @@ package com.sun.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sun.constants.SystemConstants;
 import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
 import com.sun.mapper.ArticleMapper;
@@ -24,11 +25,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         //查询的不能是草稿。即Status字段不能是0
         //例: eq("name", "老王")--->name = '老王'
-        queryWrapper.eq(Article::getStatus,0);
+        queryWrapper.eq(Article::getStatus, SystemConstants.ARTICLE_STATUS_NORMAL);
         //按照浏览量进行排序。也就是根据ViewCount字段降序排序
         queryWrapper.orderByDesc(Article::getViewCount);
         //最多只能查询出来10条信息。当前显示第一页的数据，每页显示10条数据
-        Page<Article> page = new Page<>(1,10);
+        Page<Article> page = new Page<>(SystemConstants.ARTICLE_STATUS_CURRENT,SystemConstants.ARTICLE_STATUS_SIZE);
         page(page,queryWrapper);
 
         //获取最终的查询结果，把结果封装在Article实体类里面会有很多不需要的字段
