@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 //ServiceImpl是mybatisPlus官方提供的
@@ -93,13 +95,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
          */
         List<Article> articles = page.getRecords();
         //方法一：for循环遍历
+        /*
         for (Article article : articles) {
             //“article.getCategoryId()”表示从article表获取category_id字段，然后作为查询category表的name字段
             Category category = categoryService.getById(article.getCategoryId());
             //把查询出来的category表的name字段赋值，设置给Article实体类的categoryName成员变量
             article.setCategoryName(category.getName());
         }
+         */
         //方法二：stream流
+        articles.stream()
+                .map(new Function<Article, Article>() {
+                    @Override
+                    public Article apply(Article article) {
+                        Category category = categoryService.getById(article.getCategoryId());
+                        String name = category.getName();
+                        //把查询出来的category表的name字段值，设置给Article实体类的categoryName成员变量
+                        article.setCategoryName(name);
+                        return article;
+                    }
+                })
+                .collect(Collectors.toList());
 
         //把最后的查询结果封装成ArticleListVO
         List<ArticleListVO> articleListVOS = BeanCopyUtils.copyBeanList(page.getRecords(), ArticleListVO.class);
