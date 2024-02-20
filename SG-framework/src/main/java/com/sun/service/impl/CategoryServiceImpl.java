@@ -10,7 +10,7 @@ import com.sun.mapper.CategoryMapper;
 import com.sun.service.ArticleService;
 import com.sun.service.CategoryService;
 import com.sun.utils.BeanCopyUtils;
-import com.sun.vo.CategoryVo;
+import com.sun.vo.CategoryVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +51,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 .collect(Collectors.toList());
 
         //封装成CategoryVO实体类后返回给前端，CategoryVO的作用是只返回前端需要的字段。
-        List<CategoryVo> categoryVos = BeanCopyUtils.copyBeanList(categories,CategoryVo.class);
-        return ResponseResult.okResult(categoryVos);
+        List<CategoryVO> categoryVOs = BeanCopyUtils.copyBeanList(categories, CategoryVO.class);
+        return ResponseResult.okResult(categoryVOs);
     }
 }

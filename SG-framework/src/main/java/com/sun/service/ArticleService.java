@@ -5,6 +5,9 @@ import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
 
 public interface ArticleService extends IService<Article> {
-    //定义 hotArticleList方法
+    //文章列表
     ResponseResult hotArticleList();
+
+    //分类查询文章列表
+    ResponseResult articleList(Integer pageNum, Integer pageSize, Long categoryId);
 }

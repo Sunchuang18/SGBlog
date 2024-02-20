@@ -5,16 +5,22 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.constants.SystemConstants;
 import com.sun.domain.Article;
+import com.sun.domain.Category;
 import com.sun.domain.ResponseResult;
 import com.sun.mapper.ArticleMapper;
 import com.sun.service.ArticleService;
+import com.sun.service.CategoryService;
 import com.sun.utils.BeanCopyUtils;
+import com.sun.vo.ArticleListVO;
 import com.sun.vo.HotArticleVO;
+import com.sun.vo.PageVO;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 //ServiceImpl是mybatisPlus官方提供的
@@ -52,4 +58,56 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         return ResponseResult.okResult(articleVos);
     }
+
+    @Autowired
+    private CategoryService categoryService;
+    //分类查询文章的列表
+    @Override
+    public ResponseResult articleList(Integer pageNum, Integer pageSize, Long categoryId) {
+        LambdaQueryWrapper<Article> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //判空。若前端传了categoryId参数，则查询时要和传入的相同
+        //参数二是数据表的文章id。参数三十前端传来的文章id
+        lambdaQueryWrapper.eq(
+                Objects.nonNull(categoryId)&&categoryId>0,
+                Article::getCategoryId,
+                categoryId);
+        //只查询状态是否正式发布的文章
+        //Article实体类的status字段跟0作比较，一样则为正式发布
+        lambdaQueryWrapper.eq(Article::getStatus, SystemConstants.ARTICLE_STATUS_NORMAL);
+        //对isTop字段进行降序排序，实现置顶的文章（idTop值为1）在最前面
+        lambdaQueryWrapper.orderByDesc(Article::getIsTop);
+
+        //分页查询
+        Page<Article> page = new Page<>(pageNum, pageSize);
+        page(page, lambdaQueryWrapper);
+
+        /*
+            Article实体类有categoryId字段，但是没有categoryName字段的问题
+            解决categoryName字段没有返回值的问题。在分页之后，封装成ArticleListVO之前，进行处理
+        */
+        /*
+            用categoryId来查询categoryName（category表的name字段），也就是查询“分类名称”。
+            有两种方法：
+                ① for循环遍历
+                ② stream流
+         */
+        List<Article> articles = page.getRecords();
+        //方法一：for循环遍历
+        for (Article article : articles) {
+            //“article.getCategoryId()”表示从article表获取category_id字段，然后作为查询category表的name字段
+            Category category = categoryService.getById(article.getCategoryId());
+            //把查询出来的category表的name字段赋值，设置给Article实体类的categoryName成员变量
+            article.setCategoryName(category.getName());
+        }
+        //方法二：stream流
+
+        //把最后的查询结果封装成ArticleListVO
+        List<ArticleListVO> articleListVOS = BeanCopyUtils.copyBeanList(page.getRecords(), ArticleListVO.class);
+
+        //把以上的查询结果和文章总数封装在PageVO
+        PageVO pageVO = new PageVO(articleListVOS, page.getTotal());
+        return ResponseResult.okResult(pageVO);
+    }
+
+
 }
