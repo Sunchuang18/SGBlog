@@ -11,6 +11,7 @@ import com.sun.mapper.ArticleMapper;
 import com.sun.service.ArticleService;
 import com.sun.service.CategoryService;
 import com.sun.utils.BeanCopyUtils;
+import com.sun.vo.ArticleDetailVO;
 import com.sun.vo.ArticleListVO;
 import com.sun.vo.HotArticleVO;
 import com.sun.vo.PageVO;
@@ -123,6 +124,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //把以上的查询结果和文章总数封装在PageVO
         PageVO pageVO = new PageVO(articleListVOS, page.getTotal());
         return ResponseResult.okResult(pageVO);
+    }
+
+    //-------------------------根据id查询文章详情-------------------------
+    @Override
+    public ResponseResult getArticleDetail(Long id) {
+        //根据id查询文章
+        Article article = getById(id);
+
+        //把查询结果封装成ArticleListVO
+        ArticleDetailVO articleDetailVO = BeanCopyUtils.copyBean(article, ArticleDetailVO.class);
+
+        //根据分类id查询分类名
+        Long categoryId = articleDetailVO.getCategoryId();
+        Category category = categoryService.getById(categoryId);
+        //把根据分类id查询到的分类名设置给ArticleDetailVO实体类的categoryName字段
+        if (category != null){//避免空值
+            articleDetailVO.setCategoryName(category.getName());
+        }
+
+        //封装响应返回
+        return ResponseResult.okResult(articleDetailVO);
     }
 
 
