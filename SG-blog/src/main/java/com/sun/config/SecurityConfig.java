@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -25,8 +27,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
+    //注入官方的认证失败的处理器。此处不写private，符合开闭原则
+    //虽然注入了官方的处理器，但最终用的是自己写的
+    @Autowired
+    AuthenticationEntryPoint authenticationEntryPoint;
+    @Autowired
+    AccessDeniedHandler accessDeniedHandler;
+
     @Bean
-    //把官方的人PasswordEncoder密码加密方式替换成BCryptPasswordEncoder
+    //把官方的PasswordEncoder密码加密方式替换成BCryptPasswordEncoder
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
@@ -50,6 +59,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().permitAll();
+
+        //把自定义异常处理器配置给Security
+        http.exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler);
 
         //禁用默认的注销功能
         http.logout().disable();
