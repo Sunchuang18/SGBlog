@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -29,6 +30,7 @@ public class BlogLoginServiceImpl implements BlogLoginService {
     @Autowired
     private RedisCache redisCache;
 
+    //登录
     @Override
     public ResponseResult login(User user) {
         //封装登录的用户名和密码
@@ -60,5 +62,24 @@ public class BlogLoginServiceImpl implements BlogLoginService {
 
         //封装响应返回
         return ResponseResult.okResult(VO);
+    }
+
+    //登出
+    @Override
+    public ResponseResult logout() {
+        //获取token，然后解析token值获取其中的userid
+        //获取当前用户的身份验证信息，并将其存储在Authentication对象中
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //返回一个Object类型的对象，代表认证的主体，通常是用户。再把对象强转
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+
+        //获取userid
+        Long userid = loginUser.getUser().getId();
+
+        //在redis根据key来删除用户的value值，注意之前在存key的时候是加了“bloglogin:”前缀
+        redisCache.deleteObject("bloglogin:"+userid);
+
+        //封装响应返回
+        return ResponseResult.okResult();
     }
 }

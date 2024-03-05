@@ -57,7 +57,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //为方便测试认证过滤器，把查询友链的接口设置为需要登录才能访问
                 .antMatchers("/link/getAllLink").authenticated()
 
-                // 除上面外的所有请求全部需要鉴权认证
+                //退出登录的配置。若没登录就调用退出登录，则报错为“401 需要登录后操作”，也就是authenticated
+                .antMatchers("/logout").authenticated()
+
+                // 除上面外的所有请求全部不需要认证即可访问
                 .anyRequest().permitAll();
 
         //把自定义异常处理器配置给Security
