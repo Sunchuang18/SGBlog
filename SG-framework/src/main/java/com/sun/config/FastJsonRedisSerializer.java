@@ -18,6 +18,7 @@ public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {
     private Class<T> clazz;
 
     static {
+        ParserConfig.getGlobalInstance().addAccept("com.sun.domain");
         ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
     }
 
