@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,4 +32,7 @@ public class CommentVO {
 
     //评论是谁发的
     private String username;
+
+    //查询子评论
+    private List<CommentVO> children;
 }

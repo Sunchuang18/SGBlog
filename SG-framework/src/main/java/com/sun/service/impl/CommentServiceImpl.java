@@ -15,7 +15,9 @@ import com.sun.vo.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("commentService")
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
@@ -37,13 +39,43 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Page<Comment> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
 
-        List<CommentVO> commentVOList = xxToCommentList(page.getRecords());
+        //根评论排序
+        // 从Page<Comment>对象中获取当前页的所有记录，返回一个List<Comment>
+        List<Comment> sortedComments = page.getRecords().stream()
+                // 对流中的元素进行排序。
+                // 这里使用了Comparator.comparing来根据Comment对象的getCreateTime方法的返回值进行排序。
+                // .reversed()表示按照降序排序，也就是最新的评论会排在最前面。
+                .sorted(Comparator.comparing(Comment::getCreateTime).reversed())
+                // 将排序后的流重新收集到一个新的列表中
+                .collect(Collectors.toList());
+        List<CommentVO> commentVOList = returnToCommentList(sortedComments);
+
+        //遍历。查询子评论（注意子评论只能查到二级评论）
+        for (CommentVO commentVO : commentVOList) {
+            //查询对应的子评论
+            List<CommentVO> children = getChildren(commentVO.getId());
+            //把查到的children子评论集的集合赋值给commentVO类的children字段
+            commentVO.setChildren(children);
+        }
 
         return ResponseResult.okResult(new PageVO(commentVOList, page.getTotal()));
     }
 
+    //根据评论区的id来查询对应的所有子评论（注意子评论只能查到二级评论）
+    private List<CommentVO> getChildren(Long id){
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Comment::getRootId, id);
+        //对子评论按照时间进行排序
+        queryWrapper.orderByDesc(Comment::getCreateTime);
+        //将queryWrapper封装为list集合
+        List<Comment> comments = list(queryWrapper);
+        //调用封装方法对结果进行封装
+        List<CommentVO> commentVOS = returnToCommentList(comments);
+        return commentVOS;
+    }
+
     //封装响应返回
-    private List<CommentVO> xxToCommentList(List<Comment> list){
+    private List<CommentVO> returnToCommentList(List<Comment> list){
         //获取评论区的所有评论
         List<CommentVO> commentVOS = BeanCopyUtils.copyBeanList(list, CommentVO.class);
         //遍历。由封装好的数据里没有username字段，暂时不能返回给前端。此遍历用来得到username字段
