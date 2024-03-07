@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.constants.SystemConstants;
 import com.sun.domain.Comment;
 import com.sun.domain.ResponseResult;
+import com.sun.enums.AppHttpCodeEnum;
+import com.sun.exception.SystemException;
 import com.sun.mapper.CommentMapper;
 import com.sun.service.CommentService;
 import com.sun.service.UserService;
@@ -14,6 +16,7 @@ import com.sun.vo.CommentVO;
 import com.sun.vo.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +28,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     //根据userid查询用户信息，也就是查username
     @Autowired
     private UserService userService;
+
+    //查询评论区的评论
     @Override
     public ResponseResult commentList(Long articleId, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
@@ -59,6 +64,27 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
 
         return ResponseResult.okResult(new PageVO(commentVOList, page.getTotal()));
+    }
+
+    //在文章的评论区发送评论
+    @Override
+    public ResponseResult addComment(Comment comment) {
+        /*
+            注意前端在调用这个发送评论接口时，在请求体是没有传入createTime、createId、updateTime、updateID字段，
+            这会导致这四个字段没有值。
+            为了解决这个问题，在MyMetaObjectHandler类、Comment类做了自动填充功能。
+         */
+
+        //限制用户在发送评论时，评论内容不能为空。为空则抛出异常
+        if (!StringUtils.hasText(comment.getContent())){
+            throw new SystemException(AppHttpCodeEnum.CONTENT_NOT_NULL);
+        }
+
+        //解决四个字段没有值的情况，可以调用MyBatisPlus提供的save方法向数据库插入数据
+        save(comment);
+
+        //封装响应返回
+        return ResponseResult.okResult();
     }
 
     //根据评论区的id来查询对应的所有子评论（注意子评论只能查到二级评论）
