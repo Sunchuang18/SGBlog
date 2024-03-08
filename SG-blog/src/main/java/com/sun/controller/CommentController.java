@@ -1,5 +1,6 @@
 package com.sun.controller;
 
+import com.sun.constants.SystemConstants;
 import com.sun.domain.Comment;
 import com.sun.domain.ResponseResult;
 import com.sun.service.CommentService;
@@ -15,12 +16,18 @@ public class CommentController {
 
     @GetMapping("/commentList")
     public ResponseResult commentList(Long articleId, Integer pageNum, Integer pageSize){
-        return commentService.commentList(articleId, pageNum, pageSize);
+        return commentService.commentList(SystemConstants.ARTICLE_COMMENT, articleId, pageNum, pageSize);
     }
 
     //在文章的评论区发送评论
     @PostMapping
     public ResponseResult addComment(@RequestBody Comment comment){
         return commentService.addComment(comment);
+    }
+
+    //在友链的评论区发送评论
+    @GetMapping("/linkCommentList")
+    public ResponseResult linkCommentList(Integer pageNum, Integer pageSize){
+        return commentService.commentList(SystemConstants.LINK_COMMENT, null, pageNum, pageSize);
     }
 }

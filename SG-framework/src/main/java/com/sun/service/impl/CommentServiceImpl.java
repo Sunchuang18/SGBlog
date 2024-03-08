@@ -31,14 +31,18 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     //查询评论区的评论
     @Override
-    public ResponseResult commentList(Long articleId, Integer pageNum, Integer pageSize) {
+    public ResponseResult commentList(String commentType, Long articleId, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
 
         //对articleId进行判断，作用是得到指定的文章
-        queryWrapper.eq(Comment::getArticleId, articleId);
+        //如果是文章评论，会判断articleId，避免友链评论判断articleId时出现空指针
+        queryWrapper.eq(SystemConstants.ARTICLE_COMMENT.equals(commentType), Comment::getArticleId, articleId);
 
         //对评论区的某条评论的rootID进行判断，如果为-1，就表示是根评论。
         queryWrapper.eq(Comment::getRootId, SystemConstants.COMMENT_ROOT);
+
+        //文章的评论，避免查到友链的评论
+        queryWrapper.eq(Comment::getType, commentType);
 
         //分页查询。查的是整个评论区的每一条评论
         Page<Comment> page = new Page<>(pageNum, pageSize);
