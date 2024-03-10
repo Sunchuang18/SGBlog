@@ -11,13 +11,7 @@
 
     <artifactId>SG-admin</artifactId>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <!--用huanf-framework模块里面的依赖-->
+    <!--用SG-framework模块里面的依赖-->
     <dependencies>
         <dependency>
             <groupId>com.sun</groupId>
