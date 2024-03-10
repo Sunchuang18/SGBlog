@@ -7,4 +7,7 @@ import com.sun.domain.User;
 public interface UserService extends IService<User> {
     //个人信息查询
     ResponseResult userInfo();
+
+    //更新个人信息
+    ResponseResult updateUserInfo(User user);
 }
