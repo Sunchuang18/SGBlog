@@ -34,3 +34,9 @@ mybatis-plus:
       logic-not-delete-value: 0
       # 逐渐自增策略，以mysql数据库为准
       id-type: auto
+
+# 七牛云相关配置
+myoss:
+  ossAccessKey: E8oAaws47Np7j0Bpg8-iKMQ9wE-wpX43Gn3i4OGz
+  ossSecretKey: Ya1V1mjl_inzmP3jINQQ3Ko065gCNiDHSJFGJla5
+  ossBucket: sunchuang-sgblog
