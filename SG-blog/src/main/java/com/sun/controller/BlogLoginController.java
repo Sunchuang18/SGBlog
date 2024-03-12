@@ -1,5 +1,6 @@
 package com.sun.controller;
 
+import com.sun.annotation.mySystemLog;
 import com.sun.domain.ResponseResult;
 import com.sun.domain.User;
 import com.sun.enums.AppHttpCodeEnum;
@@ -19,6 +20,7 @@ public class BlogLoginController {
 
     //登录
     @PostMapping("/login")
+    @mySystemLog(businessName = "登录")
     public ResponseResult login(@RequestBody User user){
         //如果用户在进行登录时没有传入“用户名”
         if (!StringUtils.hasText(user.getUserName())){
@@ -30,6 +32,7 @@ public class BlogLoginController {
 
     //登出
     @PostMapping("/logout")
+    @mySystemLog(businessName = "登出")
     public ResponseResult logout(){
         return blogLoginService.logout();
     }

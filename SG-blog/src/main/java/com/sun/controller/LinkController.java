@@ -1,5 +1,6 @@
 package com.sun.controller;
 
+import com.sun.annotation.mySystemLog;
 import com.sun.domain.ResponseResult;
 import com.sun.service.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ public class LinkController {
     private LinkService linkService;
 
     @GetMapping("/getAllLink")
+    @mySystemLog(businessName = "查询友链")
     public ResponseResult getAllLink(){
         return linkService.getAllLink();
     }

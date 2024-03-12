@@ -1,5 +1,6 @@
 package com.sun.controller;
 
+import com.sun.annotation.mySystemLog;
 import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
 import com.sun.service.ArticleService;
@@ -21,6 +22,7 @@ public class ArticleController {
 
     //测试mybatisPlus
     @GetMapping("/list")
+    @mySystemLog(businessName = "查询数据库的所有数据")
     //http://localhost:8080/article/list
     // Article是公共模块的实体类
     public List<Article> test(){
@@ -30,6 +32,7 @@ public class ArticleController {
 
     //测试统一响应格式
     @GetMapping("/hotArticleList")
+    @mySystemLog(businessName = "查询热门文章")
     //http://localhost:8080/article/hotArticleList
     //ResponseResult是SG-framework工程的domain目录的类
     public ResponseResult hotArticleList(){
