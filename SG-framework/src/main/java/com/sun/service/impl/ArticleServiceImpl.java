@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,8 +30,23 @@ import java.util.stream.Collectors;
 @Service
 //ServiceImpl是mybatisPlus官方提供的
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
+    @Autowired
+    private ArticleService articleService;
+    //-------------------------热门文章列表-------------------------
     @Override
     public ResponseResult hotArticleList() {
+        //每次调用这个方法就从redis查询文章的浏览量，展示在热门文章列表
+
+        //获取redis中的浏览量，注意得到的viewCountMap是HashMap双列集合
+        Map<String, Integer> viewCountMap= redisCache.getCacheMap("article:viewCount");
+        //让双列集合调用entrySet方法即可转为单列集合，然后才能调用stream方法
+        List<Article> articleList = viewCountMap.entrySet()
+                .stream()
+                .map(entry->new Article(Long.valueOf(entry.getKey()),entry.getValue().longValue()))
+                .collect(Collectors.toList());//把最终数据转为List集合
+        //把获取到的浏览量更新到mysql数据库中
+        articleService.updateBatchById(articleList);
+
         //查询热门文章，封装成ResponseResult返回。把所有查询条件写在queryWrapper里
         //queryWrapper是mybatis plus中实现查询的对象封装操作类
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
@@ -65,7 +81,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private CategoryService categoryService;
-    //分类查询文章的列表
+    //-------------------------分类查询文章的列表-------------------------
     @Override
     public ResponseResult articleList(Integer pageNum, Integer pageSize, Long categoryId) {
         LambdaQueryWrapper<Article> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -132,6 +148,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public ResponseResult getArticleDetail(Long id) {
         //根据id查询文章
         Article article = getById(id);
+
+        //从redis查询文章的浏览量，展示在文章详情
+        Integer viewCount = redisCache.getCacheMapValue("article:viewCount", id.toString());
+        article.setViewCount(viewCount.longValue());
 
         //把查询结果封装成ArticleListVO
         ArticleDetailVO articleDetailVO = BeanCopyUtils.copyBean(article, ArticleDetailVO.class);
