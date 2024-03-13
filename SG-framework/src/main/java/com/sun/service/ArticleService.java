@@ -13,4 +13,7 @@ public interface ArticleService extends IService<Article> {
 
     //根据id查询文章详情
     ResponseResult getArticleDetail(Long id);
+
+    //根据文章id从mysql查询文章
+    ResponseResult updateViewCount(Long id);
 }

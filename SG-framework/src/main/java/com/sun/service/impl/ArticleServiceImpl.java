@@ -11,6 +11,7 @@ import com.sun.mapper.ArticleMapper;
 import com.sun.service.ArticleService;
 import com.sun.service.CategoryService;
 import com.sun.utils.BeanCopyUtils;
+import com.sun.utils.RedisCache;
 import com.sun.vo.ArticleDetailVO;
 import com.sun.vo.ArticleListVO;
 import com.sun.vo.HotArticleVO;
@@ -145,6 +146,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         //封装响应返回
         return ResponseResult.okResult(articleDetailVO);
+    }
+
+    @Autowired
+    private RedisCache redisCache;
+    //-------------------------根据文章id从mysql查询文章-------------------------
+    @Override
+    public ResponseResult updateViewCount(Long id) {
+        //更新redis中的浏览量，对应文章id的viewCount浏览量
+        //用户每从mysql根据文章id查询一次浏览量，那么redis的浏览量就增加1
+        redisCache.incrementCacheMapValue("article:viewCount", id.toString(), 1);
+        return ResponseResult.okResult();
     }
 
 
