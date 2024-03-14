@@ -4,6 +4,7 @@ import com.sun.annotation.mySystemLog;
 import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
 import com.sun.service.ArticleService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/article")
+@Api(tags = "文章的相关接口文档")
 public class ArticleController {
 
     @Autowired

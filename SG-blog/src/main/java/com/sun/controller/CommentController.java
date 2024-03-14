@@ -5,11 +5,14 @@ import com.sun.constants.SystemConstants;
 import com.sun.domain.Comment;
 import com.sun.domain.ResponseResult;
 import com.sun.service.CommentService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/comment")
+//自定义添加swagger信息。tags：标签。description：描述信息。
+@Api(tags = "评论的接口文档", description = "描述信息")
 public class CommentController {
 
     @Autowired

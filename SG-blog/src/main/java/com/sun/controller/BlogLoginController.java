@@ -6,6 +6,7 @@ import com.sun.domain.User;
 import com.sun.enums.AppHttpCodeEnum;
 import com.sun.exception.SystemException;
 import com.sun.service.BlogLoginService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Api(tags = "用户登录的相关接口文档")
 public class BlogLoginController {
 
     @Autowired
