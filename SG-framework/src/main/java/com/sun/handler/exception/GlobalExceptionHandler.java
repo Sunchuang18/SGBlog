@@ -30,8 +30,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseResult exceptionHandler(Exception e){
         //打印异常信息。其中{}是占位符，具体指由e决定
-        // log.error("出现了异常！{}",e);
-        log.error("出现了异常！{}",e.getMessage());
+        log.error("出现了异常！{}",e);
+        // log.error("出现了异常！{}",e.getMessage());
         //从异常对象中获取提示信息封装，然后返回。
         return ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR.getCode(), e.getMessage());
     }

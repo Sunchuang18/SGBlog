@@ -16,6 +16,7 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/commentList")
+    @mySystemLog(businessName = "查询评论区的评论")
     public ResponseResult commentList(Long articleId, Integer pageNum, Integer pageSize){
         return commentService.commentList(SystemConstants.ARTICLE_COMMENT, articleId, pageNum, pageSize);
     }

@@ -20,6 +20,11 @@ spring:
     port: 6379
     password: 123456
     database: 10
+  # SpringBoot2.6版本之后需要配置ant_path_matcher才能使swagger生成接口文档
+  # 目前SpringBoot的版本是2.5.0，不需要配置ant_path_matcher也可以正常使用swagger
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 mybatis-plus:
   #configuration:
     # 日志
