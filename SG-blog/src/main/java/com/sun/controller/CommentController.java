@@ -4,7 +4,9 @@ import com.sun.annotation.mySystemLog;
 import com.sun.constants.SystemConstants;
 import com.sun.domain.Comment;
 import com.sun.domain.ResponseResult;
+import com.sun.domain.addCommentDto;
 import com.sun.service.CommentService;
+import com.sun.utils.BeanCopyUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,7 +36,12 @@ public class CommentController {
     //自定义在swagger中请求接口的信息。默认是value属性
     @ApiOperation("在文章的评论区发送评论")
     @mySystemLog(businessName = "在文章的评论区发送评论")
-    public ResponseResult addComment(@RequestBody Comment comment){
+    /*public ResponseResult addComment(@RequestBody Comment comment){
+        return commentService.addComment(comment);
+    }*/
+    public ResponseResult addComment(@RequestBody addCommentDto addCommentDto){
+        //把addCommentDto类转换为Comment类类型
+        Comment comment = BeanCopyUtils.copyBean(addCommentDto, Comment.class);
         return commentService.addComment(comment);
     }
 

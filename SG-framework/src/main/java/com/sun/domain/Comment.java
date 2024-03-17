@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("sg_comment")
+//自定义在swagger中实体类描述的信息
+//注意只有当请求业务接口是通过@RequestBody注解要接受前端传过来请求体的时候，才能在@RequestBody注解后面的实体类添加描述信息
+@ApiModel(description = "添加评论区的实体类")
 public class Comment {
     @TableId
     private Long id;
