@@ -6,6 +6,8 @@ import com.sun.domain.Comment;
 import com.sun.domain.ResponseResult;
 import com.sun.service.CommentService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,11 @@ public class CommentController {
     @GetMapping("/linkCommentList")
     //自定义在swagger中请求接口的信息
     @ApiOperation(value = "友链评论列表", notes = "获取友链评论区的评论")
+    //自动以在swagger中请求接口的参数信息
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pageNum", value = "页号"),
+            @ApiImplicitParam(name = "pageSize", value = "每页大小")
+    })
     @mySystemLog(businessName = "在友链的评论区发送评论")
     public ResponseResult linkCommentList(Integer pageNum, Integer pageSize){
         return commentService.commentList(SystemConstants.LINK_COMMENT, null, pageNum, pageSize);
