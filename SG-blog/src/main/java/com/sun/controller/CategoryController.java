@@ -4,6 +4,7 @@ import com.sun.annotation.mySystemLog;
 import com.sun.domain.ResponseResult;
 import com.sun.service.CategoryService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,8 @@ public class CategoryController {
 
     //ResponseResult是在SG-framework工程写的实体类
     @GetMapping("/getCategoryList")
+    //自定义在swagger中请求接口的信息
+    @ApiOperation("查询文章分类")
     @mySystemLog(businessName = "查询文章分类")
     public ResponseResult getCategoryList(){
         return categoryService.getCategoryList();
