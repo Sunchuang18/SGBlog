@@ -1,6 +1,7 @@
 package com.sun.controller;
 
 import com.sun.domain.LoginUser;
+import com.sun.domain.Menu;
 import com.sun.domain.ResponseResult;
 import com.sun.domain.User;
 import com.sun.enums.AppHttpCodeEnum;
@@ -11,6 +12,7 @@ import com.sun.service.SystemLoginService;
 import com.sun.utils.BeanCopyUtils;
 import com.sun.utils.SecurityUtils;
 import com.sun.vo.AdminUserInfoVO;
+import com.sun.vo.RoutersVO;
 import com.sun.vo.UserInfoVO;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +63,17 @@ public class LoginController {
         //封装响应返回
         AdminUserInfoVO adminUserInfoVO = new AdminUserInfoVO(perms, roleKeyList, userInfoVO);
         return ResponseResult.okResult(adminUserInfoVO);
+    }
+
+    //查询路由信息（权限菜单）
+    @GetMapping("/getRouters")
+    public ResponseResult<RoutersVO> getRouters(){
+        //获取用户id
+        Long userId = SecurityUtils.getUserId();
+
+        //根据id查询menu（权限菜单）。要求查询结果是tree的形式，也就是子父菜单树
+        List<Menu> menus = menuService.selectRouterMenuTreeByUserId(userId);
+        //封装响应返回
+        return ResponseResult.okResult(new RoutersVO(menus));
     }
 }

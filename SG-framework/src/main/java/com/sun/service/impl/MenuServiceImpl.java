@@ -38,4 +38,60 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         List<String> otherPerms = getBaseMapper().selectPermsByOtherUserId(id);
         return otherPerms;
     }
+
+    /**
+     * 查询用户的路由信息
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<Menu> selectRouterMenuTreeByUserId(Long userId) {
+        MenuMapper menuMapper = getBaseMapper();
+        List<Menu> menus = null;
+
+        //判断是否是超级管理员
+        //用户id为1代表超级管理员，如果是就返回所有符合要求的权限菜单
+        if (userId.equals(1L)){
+            menus = menuMapper.selectAllRouterMenu();
+        } else {
+            //如果不是超级管理员，就查询对应用户所具有的路由信息（权限菜单）
+            menus = menuMapper.selectOtherRouterMenuTreeByUserId(userId);
+        }
+
+        //构建成tree，也就是子父菜单树，有层级关系
+        List<Menu> menuTree = buildMenuTree(menus, 0L);
+
+        return menuTree;
+    }
+
+    /**
+     * 把List集合里的数据构建城tree，也就是子父菜单树，有层级关系
+     * @param menus
+     * @param parentId
+     * @return
+     */
+    private List<Menu> buildMenuTree(List<Menu> menus, Long parentId){
+        List<Menu> menuTree = menus.stream()
+                //过滤找出父菜单树，也就是第一层
+                .filter(menu -> menu.getParentId().equals(parentId))
+                .map(menu -> menu.setChildren(getChildren(menu, menus)))
+                .collect(Collectors.toList());
+        return menuTree;
+    }
+
+    /**
+     * 获取传入参数的子菜单，并封装为List集合返回
+     * @param menu
+     * @param menus
+     * @return
+     */
+    private List<Menu> getChildren(Menu menu, List<Menu> menus){
+        List<Menu> childrenList = menus.stream()
+                //过滤得到子菜单
+                .filter(m -> m.getParentId().equals(menu.getId()))
+                //如果有三层菜单的话，也就是子菜单的子菜单，就用下面这行代码递归来处理
+                .map(m -> m.setChildren(getChildren(m, menus)))
+                .collect(Collectors.toList());
+        return childrenList;
+    }
 }
