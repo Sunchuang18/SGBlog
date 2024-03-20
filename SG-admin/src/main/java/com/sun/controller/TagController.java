@@ -3,6 +3,7 @@ package com.sun.controller;
 import com.sun.domain.ResponseResult;
 import com.sun.domain.Tag;
 import com.sun.dto.AddTagDto;
+import com.sun.dto.EditTagDto;
 import com.sun.dto.TagListDto;
 import com.sun.service.TagService;
 import com.sun.utils.BeanCopyUtils;
@@ -38,6 +39,20 @@ public class TagController {
     @DeleteMapping("/{id}")
     public ResponseResult delete(@PathVariable Long id){
         tagService.removeById(id);
+        return ResponseResult.okResult();
+    }
+
+    //修改标签
+    //① 根据标签的id来查询标签
+    @GetMapping("/{id}")
+    public ResponseResult getInfo(@PathVariable(value = "id")Long id){
+        return ResponseResult.okResult(tagService.getById(id));
+    }
+    //② 根据标签的id来修改标签
+    @PutMapping
+    public ResponseResult edit(@RequestBody EditTagDto tagDto){
+        Tag tag = BeanCopyUtils.copyBean(tagDto, Tag.class);
+        tagService.updateById(tag);
         return ResponseResult.okResult();
     }
 }
