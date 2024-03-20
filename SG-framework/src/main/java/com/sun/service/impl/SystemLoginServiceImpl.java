@@ -6,6 +6,7 @@ import com.sun.domain.User;
 import com.sun.service.SystemLoginService;
 import com.sun.utils.JwtUtil;
 import com.sun.utils.RedisCache;
+import com.sun.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,5 +56,19 @@ public class SystemLoginServiceImpl implements SystemLoginService {
         Map<String,String> map = new HashMap<>();
         map.put("token", jwt);
         return ResponseResult.okResult(map);
+    }
+
+    //退出登录
+    @Override
+    public ResponseResult logout() {
+        //获取当前登录的用户id
+        Long userId = SecurityUtils.getUserId();
+
+        //删除redis中对应的值
+        //在redis根据key来删除用户的value值，注意之前在存key的时候是加了“login:”前缀
+        redisCache.deleteObject("login:" + userId);
+
+        //封装响应返回
+        return ResponseResult.okResult();
     }
 }
