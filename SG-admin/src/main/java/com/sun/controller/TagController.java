@@ -33,4 +33,11 @@ public class TagController {
         tagService.save(tag);
         return ResponseResult.okResult();
     }
+
+    //删除标签
+    @DeleteMapping("/{id}")
+    public ResponseResult delete(@PathVariable Long id){
+        tagService.removeById(id);
+        return ResponseResult.okResult();
+    }
 }
