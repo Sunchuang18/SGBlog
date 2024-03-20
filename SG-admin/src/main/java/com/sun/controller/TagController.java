@@ -1,15 +1,16 @@
 package com.sun.controller;
 
 import com.sun.domain.ResponseResult;
+import com.sun.domain.Tag;
+import com.sun.dto.AddTagDto;
 import com.sun.dto.TagListDto;
 import com.sun.service.TagService;
+import com.sun.utils.BeanCopyUtils;
 import com.sun.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/content/tag")
@@ -23,5 +24,13 @@ public class TagController {
     @ApiOperation("查询标签列表")
     public ResponseResult<PageVO> list(Integer pageNum, Integer pageSize, TagListDto tagListDto){
         return tagService.pageTagList(pageNum, pageSize, tagListDto);
+    }
+
+    //新增标签
+    @PostMapping
+    public ResponseResult add(@RequestBody AddTagDto tagDto){
+        Tag tag = BeanCopyUtils.copyBean(tagDto, Tag.class);
+        tagService.save(tag);
+        return ResponseResult.okResult();
     }
 }

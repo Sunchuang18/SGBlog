@@ -14,7 +14,7 @@ import java.util.Date;
  */
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
-    //只要对数据库执行了插入预计，就会执行此方法
+    //只要对数据库执行了插入语句，就会执行此方法
     @Override
     public void insertFill(MetaObject metaObject) {
         Long userId = null;
@@ -37,6 +37,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         this.setFieldValByName("updateTime", new Date(), metaObject);
-        this.setFieldValByName("", SecurityUtils.getUserId(), metaObject);
+        this.setFieldValByName(" ", SecurityUtils.getUserId(), metaObject);
     }
 }
