@@ -1,7 +1,9 @@
 package com.sun.controller;
 
 import com.sun.domain.ResponseResult;
+import com.sun.dto.TagListDto;
 import com.sun.service.TagService;
+import com.sun.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ public class TagController {
     //查询标签列表
     @GetMapping("/list")
     @ApiOperation("查询标签列表")
-    public ResponseResult list(){
-        return ResponseResult.okResult(tagService.list());
+    public ResponseResult<PageVO> list(Integer pageNum, Integer pageSize, TagListDto tagListDto){
+        return tagService.pageTagList(pageNum, pageSize, tagListDto);
     }
 }
