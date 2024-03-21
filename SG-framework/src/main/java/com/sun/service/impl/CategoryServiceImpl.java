@@ -54,4 +54,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         List<CategoryVO> categoryVOs = BeanCopyUtils.copyBeanList(categories, CategoryVO.class);
         return ResponseResult.okResult(categoryVOs);
     }
+
+    //写博客--查询分类的接口
+    @Override
+    public List<CategoryVO> listAllCategory() {
+        LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<>();
+        //查询处于正常状态的分类
+        wrapper.eq(Category::getStatus, SystemConstants.NORMAL);
+        //把查询到的结果存入到list集合中
+        List<Category> list = list(wrapper);
+        //把list集合拷贝到VO中，并返回给前端
+        List<CategoryVO> categoryVOS = BeanCopyUtils.copyBeanList(list, CategoryVO.class);
+        return categoryVOS;
+    }
 }
