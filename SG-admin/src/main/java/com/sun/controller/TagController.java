@@ -8,10 +8,13 @@ import com.sun.dto.TagListDto;
 import com.sun.service.TagService;
 import com.sun.utils.BeanCopyUtils;
 import com.sun.vo.PageVO;
+import com.sun.vo.TagVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/content/tag")
@@ -37,22 +40,26 @@ public class TagController {
 
     //删除标签
     @DeleteMapping("/{id}")
-    public ResponseResult delete(@PathVariable Long id){
-        tagService.removeById(id);
-        return ResponseResult.okResult();
+    public ResponseResult deleteTag(@PathVariable Long id){
+        return tagService.deleteTag(id);
     }
 
     //修改标签
     //① 根据标签的id来查询标签
     @GetMapping("/{id}")
-    public ResponseResult getInfo(@PathVariable(value = "id")Long id){
-        return ResponseResult.okResult(tagService.getById(id));
+    public ResponseResult getTableById(@PathVariable Long id){
+        return tagService.getTableById(id);
     }
     //② 根据标签的id来修改标签
     @PutMapping
-    public ResponseResult edit(@RequestBody EditTagDto tagDto){
-        Tag tag = BeanCopyUtils.copyBean(tagDto, Tag.class);
-        tagService.updateById(tag);
-        return ResponseResult.okResult();
+    public ResponseResult updateById(@RequestBody TagVO tagVO){
+        return tagService.myUpdateById(tagVO);
+    }
+
+    //写博文--查询文章标签的接口
+    @GetMapping("/listAllTag")
+    public ResponseResult listAllTag(){
+        List<TagVO> list = tagService.listAllTag();
+        return ResponseResult.okResult(list);
     }
 }
