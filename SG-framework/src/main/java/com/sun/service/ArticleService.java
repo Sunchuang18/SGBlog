@@ -3,6 +3,7 @@ package com.sun.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
+import com.sun.dto.AddArticleDto;
 
 public interface ArticleService extends IService<Article> {
     //文章列表
@@ -16,4 +17,7 @@ public interface ArticleService extends IService<Article> {
 
     //根据文章id从mysql查询文章
     ResponseResult updateViewCount(Long id);
+
+    //新增博客文章
+    ResponseResult add(AddArticleDto article);
 }

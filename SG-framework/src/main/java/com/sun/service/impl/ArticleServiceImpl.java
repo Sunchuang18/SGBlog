@@ -5,20 +5,22 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.constants.SystemConstants;
 import com.sun.domain.Article;
+import com.sun.domain.ArticleTag;
 import com.sun.domain.Category;
 import com.sun.domain.ResponseResult;
+import com.sun.dto.AddArticleDto;
 import com.sun.mapper.ArticleMapper;
 import com.sun.service.ArticleService;
+import com.sun.service.ArticleTagService;
+import com.sun.service.ArticleVOService;
 import com.sun.service.CategoryService;
 import com.sun.utils.BeanCopyUtils;
 import com.sun.utils.RedisCache;
-import com.sun.vo.ArticleDetailVO;
-import com.sun.vo.ArticleListVO;
-import com.sun.vo.HotArticleVO;
-import com.sun.vo.PageVO;
+import com.sun.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,6 +178,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //更新redis中的浏览量，对应文章id的viewCount浏览量
         //用户每从mysql根据文章id查询一次浏览量，那么redis的浏览量就增加1
         redisCache.incrementCacheMapValue("article:viewCount", id.toString(), 1);
+        return ResponseResult.okResult();
+    }
+
+    @Autowired
+    private ArticleTagService articleTagService;
+    @Autowired
+    private ArticleVOService articleVOService;
+    //-------------------------新增博客文章-------------------------
+    @Override
+    @Transactional
+    public ResponseResult add(AddArticleDto articleDto) {
+        //添加博客
+        ArticleVO articleVO = BeanCopyUtils.copyBean(articleDto, ArticleVO.class);
+        articleVOService.save(articleVO);
+
+        List<ArticleTag> articleTags = articleDto.getTags().stream()
+                .map(tagId -> new ArticleTag(articleVO.getId(), tagId))
+                .collect(Collectors.toList());
+
+        //添加 博客与标签的关联
+        articleTagService.saveBatch(articleTags);
         return ResponseResult.okResult();
     }
 
