@@ -12,6 +12,8 @@ public class WebUtils {
      * @param response  渲染对象
      * @param string  待渲染的字符串
      */
+    //easyExcel文件导出失败时做的操作
+    //将json字符串写入到请求体，然后返回给前端
     public static void renderString(HttpServletResponse response, String string){
         try {
             response.setStatus(200);
@@ -23,11 +25,11 @@ public class WebUtils {
         }
     }
 
-    public static void setDownLoadHeader(String filename, ServletContext context, HttpServletResponse response) throws UnsupportedEncodingException {
-        //获取文件的mime类型
-        String mimeType = context.getMimeType(filename);
-        response.setHeader("content-type", mimeType);
-        String fName = URLEncoder.encode(filename, "UTF-8");
+    //easyExcel文件导出
+    public static void setDownLoadHeader(String filename, HttpServletResponse response) throws UnsupportedEncodingException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fName = URLEncoder.encode(filename, "UTF-8").replace("\\+","%20");
         response.setHeader("Content-disposition", "attachment; filename=" + fName);
     }
 }
