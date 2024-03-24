@@ -40,4 +40,11 @@ public class CategoryController {
         categoryService.save(category);
         return ResponseResult.okResult();
     }
+
+    //删除文章的分类
+    @DeleteMapping(value = "/{id}")
+    public ResponseResult remove(@PathVariable(value = "id")Long id){
+        categoryService.removeById(id);
+        return ResponseResult.okResult();
+    }
 }
