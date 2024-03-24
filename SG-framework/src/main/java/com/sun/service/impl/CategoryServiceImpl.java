@@ -1,6 +1,7 @@
 package com.sun.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.constants.SystemConstants;
 import com.sun.domain.Article;
@@ -11,10 +12,13 @@ import com.sun.service.ArticleService;
 import com.sun.service.CategoryService;
 import com.sun.utils.BeanCopyUtils;
 import com.sun.vo.CategoryVO;
+import com.sun.vo.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -66,5 +70,29 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         //把list集合拷贝到VO中，并返回给前端
         List<CategoryVO> categoryVOS = BeanCopyUtils.copyBeanList(list, CategoryVO.class);
         return categoryVOS;
+    }
+
+    //分页查询分类列表
+    @Override
+    public PageVO selectCategoryPage(Category category, Integer pageNum, Integer pageSize) {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+
+        //如果category的name字段有值，则在queryWrapper上添加一个模糊查询，查询Category表中name字段包含category.getName()返回值的记录
+        queryWrapper.like(StringUtils.hasText(category.getName()), Category::getName, category.getName());
+        //如果category的status字段非空，则在queryWrapper上添加一个精确匹配条件，查询Category表中status字段等于category.getStatus()返回值的记录
+        queryWrapper.eq(Objects.nonNull(category.getStatus()), Category::getStatus, category.getStatus());
+
+        Page<Category> page = new Page<>();
+        page.setCurrent(pageNum);
+        page.setSize(pageSize);
+        page(page, queryWrapper);
+
+        //转换VO
+        List<Category> categories = page.getRecords();
+
+        PageVO pageVO = new PageVO();
+        pageVO.setTotal(page.getTotal());
+        pageVO.setRows(categories);
+        return pageVO;
     }
 }
