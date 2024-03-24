@@ -2,13 +2,13 @@ package com.sun.controller;
 
 import com.sun.domain.Category;
 import com.sun.domain.ResponseResult;
+import com.sun.dto.CategoryDto;
 import com.sun.service.CategoryService;
+import com.sun.utils.BeanCopyUtils;
 import com.sun.vo.CategoryVO;
 import com.sun.vo.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,5 +31,13 @@ public class CategoryController {
     public ResponseResult list(Category category, Integer pageNum, Integer pageSize){
         PageVO pageVO = categoryService.selectCategoryPage(category, pageNum, pageSize);
         return ResponseResult.okResult(pageVO);
+    }
+
+    //增加文章的分类
+    @PostMapping
+    public ResponseResult add(@RequestBody CategoryDto categoryDto){
+        Category category = BeanCopyUtils.copyBean(categoryDto, Category.class);
+        categoryService.save(category);
+        return ResponseResult.okResult();
     }
 }
