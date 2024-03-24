@@ -47,4 +47,19 @@ public class CategoryController {
         categoryService.removeById(id);
         return ResponseResult.okResult();
     }
+
+    //修改文章的分类
+    // ①根据分类的id来查询分类
+    @GetMapping(value = "/{id}")
+    public ResponseResult getInfo(@PathVariable(value = "id")Long id){
+        Category category = categoryService.getById(id);
+        return ResponseResult.okResult(category);
+    }
+    // ②根据分类的id来修改分类
+    @PutMapping
+    public ResponseResult edit(@RequestBody Category category){
+        categoryService.updateById(category);
+        return ResponseResult.okResult();
+    }
+
 }
