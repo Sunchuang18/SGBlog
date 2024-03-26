@@ -9,6 +9,7 @@ import com.sun.domain.ArticleTag;
 import com.sun.domain.Category;
 import com.sun.domain.ResponseResult;
 import com.sun.dto.AddArticleDto;
+import com.sun.dto.ArticleDto;
 import com.sun.mapper.ArticleMapper;
 import com.sun.service.ArticleService;
 import com.sun.service.ArticleTagService;
@@ -224,6 +225,40 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         pageVO.setRows(articles);
 
         return pageVO;
+    }
+
+    //-------------------------修改文章-------------------------
+    //修改文章-①根据文章id查询对应的文章
+    @Override
+    public ArticleByIdVO getInfo(Long id) {
+        Article article = getById(id);
+        //获取关联标签
+        LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleTagLambdaQueryWrapper.eq(ArticleTag::getArticleId, article.getId());
+        List<ArticleTag> articleTags = articleTagService.list(articleTagLambdaQueryWrapper);
+        List<Long> tags = articleTags.stream()
+                .map(articleTag -> articleTag.getTagId())
+                .collect(Collectors.toList());
+
+        ArticleByIdVO articleVO = BeanCopyUtils.copyBean(article, ArticleByIdVO.class);
+        articleVO.setTags(tags);
+        return articleVO;
+    }
+    //修改文章-②修改查询到的文章
+    @Override
+    public void edit(ArticleDto articleDto) {
+        Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+        //更新博客信息
+        updateById(article);
+        //删除原有的 标签和博客的关联
+        LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        articleTagLambdaQueryWrapper.eq(ArticleTag::getArticleId, article.getId());
+        articleTagService.remove(articleTagLambdaQueryWrapper);
+        //添加新的博客和标签的关联信息
+        List<ArticleTag> articleTags = articleDto.getTags().stream()
+                .map(tagId -> new ArticleTag(articleDto.getId(), tagId))
+                .collect(Collectors.toList());
+        articleTagService.saveBatch(articleTags);
     }
 
 
