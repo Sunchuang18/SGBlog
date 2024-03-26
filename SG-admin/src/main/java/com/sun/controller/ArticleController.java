@@ -45,4 +45,11 @@ public class ArticleController {
         articleService.edit(article);
         return ResponseResult.okResult();
     }
+
+    //根据文章id来删除文章
+    @DeleteMapping("/{id}")
+    public ResponseResult delete(@PathVariable Long id){
+        articleService.removeById(id);
+        return ResponseResult.okResult();
+    }
 }
