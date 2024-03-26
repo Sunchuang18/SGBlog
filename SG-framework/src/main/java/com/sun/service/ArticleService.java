@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.sun.domain.Article;
 import com.sun.domain.ResponseResult;
 import com.sun.dto.AddArticleDto;
+import com.sun.vo.PageVO;
 
 public interface ArticleService extends IService<Article> {
     //文章列表
@@ -20,4 +21,7 @@ public interface ArticleService extends IService<Article> {
 
     //新增博客文章
     ResponseResult add(AddArticleDto article);
+
+    //管理后台（文章管理）-分页查询文章
+    PageVO selectArticlePage(Article article, Integer pageNum, Integer pageSize);
 }
