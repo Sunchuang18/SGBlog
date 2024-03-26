@@ -2,8 +2,10 @@ package com.sun.service.impl;
 
 import com.baomidou.mybatisplus.core.assist.ISqlRunner;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.sun.constants.SystemConstants;
 import com.sun.domain.LoginUser;
 import com.sun.domain.User;
+import com.sun.mapper.MenuMapper;
 import com.sun.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 //当SGBlog的BlogLoginServiceImpl类封装好登录的用户名和密码之后，就会传到当前这个实现类
@@ -19,6 +22,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private MenuMapper menuMapper;
 
     //在这里之前，已经拿到了登录的用户名和密码。UserDetails是SpringSecurity官方提供的接口
     @Override
@@ -33,13 +39,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new RuntimeException("用户不存在");//后期对异常统一处理
         }
 
-        //TODO 查询权限信息，并封装
+        //如果是后台用户，才需要查询权限。
+        //对后台用户做权限校验
+        if (user.getType().equals(SystemConstants.IS_ADMIN)){
+            //根据用户id查询权限关键字，即list是权限信息的集合
+            List<String> list = menuMapper.selectPermsByOtherUserId(user.getId());
+            return new LoginUser(user, list);
+        }
 
-        /*
-            返回查询到的用户信息。
-            注意下面那行直接返回user会报错，需要在SG-framework工程的domain目录新建LoginUser类，
-            在LoginUser类实现UserDetails接口，然后下面那行就返回LoginUser对象。
-         */
-        return new LoginUser(user);
+        //如果不是后台用户，就只封装用户信息，不封装权限信息
+        //返回查询到的用户信息
+        return new LoginUser(user, null);
     }
 }

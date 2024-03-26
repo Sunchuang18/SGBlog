@@ -4,6 +4,7 @@ import com.sun.domain.ResponseResult;
 import com.sun.enums.AppHttpCodeEnum;
 import com.sun.exception.SystemException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -24,6 +25,12 @@ public class GlobalExceptionHandler {
         log.error("出现了异常！{}",e.getMessage());
         //从异常对象中获取提示信息封装，然后返回。
         return ResponseResult.errorResult(e.getCode(), e.getMsg());
+    }
+
+    //处理SpringSecurity的权限异常
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseResult handleAccessDeniedException(AccessDeniedException e){
+        return ResponseResult.errorResult(AppHttpCodeEnum.NO_OPERATOR_AUTH.getCode(), e.getMessage());
     }
 
     //其他异常的处理

@@ -38,4 +38,7 @@ public class SystemConstants {
 
     //正常状态
     public static final String NORMAL = "0";
+
+    //判断为管理员用户
+    public static final String IS_ADMIN = "1";
 }

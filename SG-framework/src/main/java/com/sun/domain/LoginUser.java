@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 //UserDetails是SpringSecurity官方提供的接口
 @Data
@@ -15,6 +16,9 @@ import java.util.Collection;
 public class LoginUser implements UserDetails {
 
     private User user;
+
+    //权限信息的集合
+    private List<String> permissions;
 
     //用于返回权限信息。现在正在实现'认证'，'权限'后面才用得到。所以返回null即可
     //当要查询用户信息的时候，不能单纯返回null，要重写这个方法，作用是返回权限信息

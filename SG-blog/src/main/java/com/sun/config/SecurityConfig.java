@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -52,12 +53,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //指定让spring Security放行登录接口的规则
                 .authorizeRequests()
                 // 对于登录接口 anonymous表示允许匿名访问
-                .antMatchers("/login").anonymous()
+                .antMatchers("/user/login").anonymous()
 
                 //为方便测试认证过滤器，把查询友链的接口设置为需要登录才能访问
                 // .antMatchers("/link/getAllLink").authenticated()//不再需要测试则可以关闭
                 //为了方便测试查询个人信息，把查询个人信息的接口设置为需要登录才能访问
-                .antMatchers("/user/userInfo").authenticated()
+                //.antMatchers("/user/userInfo").authenticated()
 
                 //把文件上传的接口设置为需要登录才能访问
                 //.antMatchers("/upload").authenticated()
@@ -65,6 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //退出登录的配置。若没登录就调用退出登录，则报错为“401 需要登录后操作”，也就是authenticated
                 .antMatchers("/logout").authenticated()
 
+                // 除上面外的所有请求全部都需要认证才可访问
+                //.anyRequest().authenticated();
                 // 除上面外的所有请求全部不需要认证即可访问
                 .anyRequest().permitAll();
 

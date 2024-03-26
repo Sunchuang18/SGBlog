@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,6 +16,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)//权限控制
 //实现Security提供的WebSecurityConfigurerAdapter类，既可改变密码校验的规则
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
@@ -64,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/upload").authenticated()
 
                 //退出登录的配置。若没登录就调用退出登录，则报错为“401 需要登录后操作”，也就是authenticated
-                //.antMatchers("/logout").authenticated()
+                .antMatchers("/logout").authenticated()
 
                 // 除上面外的所有请求全部不需要认证即可访问
                 //.anyRequest().permitAll()

@@ -13,6 +13,7 @@ import com.sun.vo.CategoryVO;
 import com.sun.vo.ExcelCategoryVO;
 import com.sun.vo.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -69,6 +70,7 @@ public class CategoryController {
     }
 
     //把分类数据写入到Excel并导出
+    @PreAuthorize("@ps.hasPermission('content:category:export')")//权限控制。ps是PermissionService类的bean名称
     @GetMapping("/export")
     public void export(HttpServletResponse response){
         try {
