@@ -7,9 +7,7 @@ import com.sun.service.MenuService;
 import com.sun.utils.BeanCopyUtils;
 import com.sun.vo.MenuVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +25,12 @@ public class MenuController {
         //转为VO
         List<MenuVO> menuVOS = BeanCopyUtils.copyBeanList(menus, MenuVO.class);
         return ResponseResult.okResult(menuVOS);
+    }
+
+    //新增菜单
+    @PostMapping
+    public ResponseResult add(@RequestBody Menu menu){
+        menuService.save(menu);
+        return ResponseResult.okResult();
     }
 }
