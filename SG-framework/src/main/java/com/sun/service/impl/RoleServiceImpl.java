@@ -5,14 +5,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.domain.ResponseResult;
 import com.sun.domain.Role;
+import com.sun.domain.RoleMenu;
 import com.sun.mapper.RoleMapper;
+import com.sun.service.RoleMenuService;
 import com.sun.service.RoleService;
 import com.sun.vo.PageVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService{
@@ -53,5 +59,24 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         pageVO.setRows(roles);
 
         return ResponseResult.okResult(pageVO);
+    }
+
+    //新增角色
+    @Autowired
+    private RoleMenuService roleMenuService;
+    @Override
+    @Transactional
+    public void insertRole(Role role) {
+        save(role);
+        System.out.println(role.getId());
+        if (role.getMenuIds() != null && role.getMenuIds().length > 0){
+            insertRoleMenu(role);
+        }
+    }
+    private void insertRoleMenu(Role role){
+        List<RoleMenu> roleMenuList = Arrays.stream(role.getMenuIds())
+                .map(menuId -> new RoleMenu(role.getId(), menuId))
+                .collect(Collectors.toList());
+        roleMenuService.saveBatch(roleMenuList);
     }
 }

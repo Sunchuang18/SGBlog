@@ -5,6 +5,8 @@ import com.sun.domain.Menu;
 import com.sun.domain.ResponseResult;
 import com.sun.service.MenuService;
 import com.sun.utils.BeanCopyUtils;
+import com.sun.utils.SystemConverter;
+import com.sun.vo.MenuTreeVO;
 import com.sun.vo.MenuVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -59,5 +61,14 @@ public class MenuController {
         }
         menuService.removeById(menuId);
         return ResponseResult.okResult();
+    }
+
+    //新增角色-获取菜单下拉树列表
+    @GetMapping("/treeselect")
+    public ResponseResult treeselect(){
+        //复用之前的selectMenuList方法。方法需要参数(参数可以用来进行条件查询)，但方法不需要天骄，所以直接new对象传入
+        List<Menu> menus = menuService.selectMenuList(new Menu());
+        List<MenuTreeVO> options = SystemConverter.buildMenuSelectTree(menus);
+        return ResponseResult.okResult(options);
     }
 }

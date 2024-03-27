@@ -12,4 +12,7 @@ public interface RoleService extends IService<Role> {
 
     //查询角色列表
     ResponseResult selectRolePage(Role role, Integer pageNum, Integer pageSize);
+
+    //新增角色
+    void insertRole(Role role);
 }

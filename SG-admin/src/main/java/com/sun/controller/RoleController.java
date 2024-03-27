@@ -28,4 +28,11 @@ public class RoleController {
         role.setStatus(roleStatusDto.getStatus());
         return ResponseResult.okResult(roleService.updateById(role));
     }
+
+    //新增角色
+    @PostMapping
+    public ResponseResult add(@RequestBody Role role){
+        roleService.insertRole(role);
+        return ResponseResult.okResult();
+    }
 }
