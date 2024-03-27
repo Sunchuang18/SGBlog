@@ -1,6 +1,7 @@
 package com.sun.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.domain.ResponseResult;
 import com.sun.domain.User;
@@ -10,11 +11,16 @@ import com.sun.mapper.UserMapper;
 import com.sun.service.UserService;
 import com.sun.utils.BeanCopyUtils;
 import com.sun.utils.SecurityUtils;
+import com.sun.vo.PageVO;
 import com.sun.vo.UserInfoVO;
+import com.sun.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -123,5 +129,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getPhonenumber,phoneNumber);
         return count(queryWrapper)>0;
+    }
+
+    //查询用户列表
+    @Override
+    public ResponseResult selectUserPage(User user, Integer pageNum, Integer pageSize){
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+
+        //根据用户名模糊搜索
+        queryWrapper.like(StringUtils.hasText(user.getUserName()), User::getUserName, user.getUserName());
+        //进行状态的查询
+        queryWrapper.eq(StringUtils.hasText(user.getStatus()), User::getStatus, user.getStatus());
+        //进行手机号的搜索
+        queryWrapper.eq(StringUtils.hasText(user.getPhonenumber()), User::getPhonenumber, user.getPhonenumber());
+
+        Page<User> page = new Page<>();
+        page.setCurrent(pageNum);
+        page.setSize(pageSize);
+        page(page, queryWrapper);
+
+        //转为VO
+        List<User> users = page.getRecords();
+        List<UserVO> userVOList = users.stream()
+                .map(u -> BeanCopyUtils.copyBean(u, UserVO.class))
+                .collect(Collectors.toList());
+        PageVO pageVO = new PageVO();
+        pageVO.setTotal(page.getTotal());
+        pageVO.setRows(userVOList);
+
+        return ResponseResult.okResult(pageVO);
     }
 }

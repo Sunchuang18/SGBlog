@@ -13,4 +13,7 @@ public interface UserService extends IService<User> {
 
     //用户注册
     ResponseResult register(User user);
+
+    //查询用户列表
+    ResponseResult selectUserPage(User user, Integer pageNum, Integer pageSize);
 }
