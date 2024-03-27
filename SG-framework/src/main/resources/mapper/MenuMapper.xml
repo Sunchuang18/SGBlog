@@ -50,4 +50,13 @@
             m.parent_id, m.order_num
     </select>
 
+    <!-- 修改角色-根据角色id查询对应角色菜单列表树 -->
+    <select id="selectMenuListByRoleId" resultType="java.lang.Long">
+        SELECT m.id
+        FROM sys_menu m
+                LEFT JOIN sys_role_menu rm ON m.id = rm.menu_id
+        WHERE rm.role_id = #{roleId}
+        ORDER BY m.parent_id, m.order_num
+    </select>
+
 </mapper>

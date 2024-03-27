@@ -8,6 +8,7 @@ import com.sun.utils.BeanCopyUtils;
 import com.sun.utils.SystemConverter;
 import com.sun.vo.MenuTreeVO;
 import com.sun.vo.MenuVO;
+import com.sun.vo.RoleMenuTreeSelectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,5 +71,15 @@ public class MenuController {
         List<Menu> menus = menuService.selectMenuList(new Menu());
         List<MenuTreeVO> options = SystemConverter.buildMenuSelectTree(menus);
         return ResponseResult.okResult(options);
+    }
+
+    //修改角色-根据角色id查询对应角色菜单列表树
+    @GetMapping(value = "/roleMenuTreeselect/{roleId}")
+    public ResponseResult roleMenuTreeSelect(@PathVariable("roleId") Long roleId){
+        List<Menu> menus = menuService.selectMenuList(new Menu());
+        List<Long> checkedKeys = menuService.selectMenuListByRoleId(roleId);
+        List<MenuTreeVO> menuTreeVOS = SystemConverter.buildMenuSelectTree(menus);
+        RoleMenuTreeSelectVO vo = new RoleMenuTreeSelectVO(checkedKeys, menuTreeVOS);
+        return ResponseResult.okResult(vo);
     }
 }

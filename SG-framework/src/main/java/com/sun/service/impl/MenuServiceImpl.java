@@ -117,4 +117,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         queryWrapper.eq(Menu::getParentId, menuId);
         return count(queryWrapper) != 0;
     }
+
+    //修改角色-根据角色id查询对应角色菜单列表树
+    @Override
+    public List<Long> selectMenuListByRoleId(Long roleId) {
+        return getBaseMapper().selectMenuListByRoleId(roleId);
+    }
 }

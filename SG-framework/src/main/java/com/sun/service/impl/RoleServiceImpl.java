@@ -79,4 +79,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                 .collect(Collectors.toList());
         roleMenuService.saveBatch(roleMenuList);
     }
+
+    //修改角色-保存修改好的角色信息
+    @Override
+    public void updateRole(Role role){
+        updateById(role);
+        roleMenuService.deleteRoleMenuByRoleId(role.getId());
+        insertRoleMenu(role);
+    }
 }
