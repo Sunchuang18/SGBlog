@@ -109,4 +109,12 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         List<Menu> menus = list(queryWrapper);
         return menus;
     }
+
+    //删除菜单-判断是否存在子菜单
+    @Override
+    public boolean hasChild(Long menuId) {
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Menu::getParentId, menuId);
+        return count(queryWrapper) != 0;
+    }
 }
