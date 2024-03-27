@@ -33,4 +33,21 @@ public class MenuController {
         menuService.save(menu);
         return ResponseResult.okResult();
     }
+
+    //修改菜单
+    //①先根据菜单id查询对应的权限菜单
+    @GetMapping(value = "/{menuId}")
+    public ResponseResult getInfo(@PathVariable Long menuId){
+        return ResponseResult.okResult(menuService.getById(menuId));
+    }
+    //②更新查询到的权限菜单
+    @PutMapping
+    public ResponseResult edit(@RequestBody Menu menu){
+        //不能把父菜单设置为当前菜单
+        if (menu.getId().equals(menu.getParentId())){
+            return ResponseResult.errorResult(500, "修改菜单'" + menu.getMenuName() + "'失败，上级菜单不能选择自己");
+        }
+        menuService.updateById(menu);
+        return ResponseResult.okResult();
+    }
 }
