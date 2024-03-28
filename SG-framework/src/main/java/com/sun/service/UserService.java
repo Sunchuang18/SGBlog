@@ -16,4 +16,10 @@ public interface UserService extends IService<User> {
 
     //查询用户列表
     ResponseResult selectUserPage(User user, Integer pageNum, Integer pageSize);
+
+    //新增用户-②新增用户
+    boolean checkUserNameUnique(String userName);
+    boolean checkPhoneUnique(User user);
+    boolean checkEmailUnique(User user);
+    ResponseResult addUser(User user);
 }

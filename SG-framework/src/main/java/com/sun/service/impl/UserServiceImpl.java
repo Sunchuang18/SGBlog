@@ -1,13 +1,16 @@
 package com.sun.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.domain.ResponseResult;
 import com.sun.domain.User;
+import com.sun.domain.UserRole;
 import com.sun.enums.AppHttpCodeEnum;
 import com.sun.exception.SystemException;
 import com.sun.mapper.UserMapper;
+import com.sun.service.UserRoleService;
 import com.sun.service.UserService;
 import com.sun.utils.BeanCopyUtils;
 import com.sun.utils.SecurityUtils;
@@ -17,8 +20,10 @@ import com.sun.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,5 +163,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         pageVO.setRows(userVOList);
 
         return ResponseResult.okResult(pageVO);
+    }
+
+    //新增用户-②新增用户
+    @Autowired
+    private UserRoleService userRoleService;
+    @Override
+    public boolean checkUserNameUnique(String userName){
+        //检查是否存在任何User的userName字段的值等于给定的userName变量。如果不存在(即计数为0)，返回true
+        return count(Wrappers.<User>lambdaQuery().eq(User::getUserName, userName))==0;
+    }
+    @Override
+    public boolean checkPhoneUnique(User user){
+        return count(Wrappers.<User>lambdaQuery().eq(User::getPhonenumber, user.getPhonenumber()))==0;
+    }
+    @Override
+    public boolean checkEmailUnique(User user){
+        return count(Wrappers.<User>lambdaQuery().eq(User::getEmail, user.getEmail()))==0;
+    }
+    @Override
+    @Transactional
+    public ResponseResult addUser(User user){
+        //密码加密处理
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        save(user);
+        if (user.getRoleIds() != null && user.getRoleIds().length > 0){
+            insertUserRole(user);
+        }
+        return ResponseResult.okResult();
+    }
+
+    private void insertUserRole(User user){
+        List<UserRole> sysSuerRoles = Arrays.stream(user.getRoleIds())
+                .map(roleId -> new UserRole(user.getId(), roleId))
+                .collect(Collectors.toList());
+        userRoleService.saveBatch(sysSuerRoles);
     }
 }
